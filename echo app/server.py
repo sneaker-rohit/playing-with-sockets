@@ -8,7 +8,7 @@
 # 5. Close the socket
 # Server Socket is used for accepting the connections
 # Client Socket is used for sending the data back to the client 
-# Author:  Rohit p. Tahiliani
+# Author:  Rohit P. Tahiliani
 
 import socket
 import sys 
@@ -18,9 +18,11 @@ HOST = ''
 # Using any non-privileged port													 
 PORT = 23000	
 backlog = 5
+# Maximum amount of data to be received at once.  
+receiveBuffer = 4096 
 try:
 	serverSocket = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
-	#REUSEADDR flag is set. This allows kernel to reuse a local socket in TIME_WAIT state 
+	# REUSEADDR flag is set. This allows kernel to reuse a local socket in TIME_WAIT state 
 	serverSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)  
 	serverSocket.bind ((HOST, PORT))
 	# Enable the server to accept multiple connections
@@ -35,7 +37,7 @@ while True:
 		# Server Socket will be reused to listen to new connections
 		clientSocket, (remoteHost, remotePort) = serverSocket.accept()
 		print "Connection received from " + remoteHost
-		data = clientSocket.recv (100)
+		data = clientSocket.recv (receiveBuffer)
 		if not data:
 			print "No data recieved from the client"
 			break
