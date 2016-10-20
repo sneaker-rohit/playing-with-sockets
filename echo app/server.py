@@ -35,8 +35,9 @@ except socket.error, errorMessage:
 while True:
 	try:
 		# Server Socket will be reused to listen to new connections
+		print "[Status] Waiting for the client to connect "
 		clientSocket, (remoteHost, remotePort) = serverSocket.accept()
-		print "Connection received from " + remoteHost
+		print "[Status] Connection received from " + remoteHost
 		data = clientSocket.recv (receiveBuffer)
 		if not data:
 			print "No data recieved from the client"
@@ -44,6 +45,7 @@ while True:
 		clientSocket.send ("You are now connected to the server. ")
 		clientSocket.send (data)
 		clientSocket.close ()
+		sys.exit (0)
 	except KeyboardInterrupt:
 		print "Aborting!! Server shutting down"
 		serverSocket.close ()
