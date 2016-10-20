@@ -3,20 +3,27 @@
 # Client side implementation. Below are the set of steps needed for the client to connect
 # 1. Connect to the address
 # 2. Send a message to the server 
-# Author:  Rohit p. Tahiliani
+# Author:  Rohit P. Tahiliani
 
 import socket 
+import sys
 
 PORT = 23000	
 HOST = ''
 # Maximum amount of data to be received at once.  
 receiveBuffer = 4096 
-# Creating a Socket
-clientSocket = socket.socket (socket.AF_INET,socket.SOCK_STREAM)
-# Connect to the remote server using appropriate address
-clientSocket.connect ((HOST,PORT))
-# Send a message to the server 
-clientSocket.send ("Hey there server!")
-print clientSocket.recv (receiveBuffer)
-# Close the connection
-clientSocket.close ()
+
+try:
+	# Creating a Socket
+	clientSocket = socket.socket (socket.AF_INET,socket.SOCK_STREAM)
+	# Connect to the remote server using appropriate address
+	clientSocket.connect ((HOST,PORT))
+	# Send a message to the server 
+	clientSocket.send ("Hey there server!")
+	print clientSocket.recv (receiveBuffer)
+	# Close the connection
+	clientSocket.close ()
+	sys.exit (0)
+except socket.error, errorMessage:
+	print "Error performing socket operations: %s" %errorMessage
+	sys.exit(1)
