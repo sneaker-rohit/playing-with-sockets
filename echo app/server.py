@@ -17,7 +17,7 @@ import sys
 HOST = ''		
 # Using any non-privileged port													 
 PORT = 23000	
-backlog = 5
+backlog = 1
 # Maximum amount of data to be received at once.  
 receiveBuffer = 4096 
 try:
@@ -46,4 +46,5 @@ while True:
 		clientSocket.close ()
 	except KeyboardInterrupt:
 		print "Aborting!! Server shutting down"
+		serverSocket.close ()
   		sys.exit(0)
