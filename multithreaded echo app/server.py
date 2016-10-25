@@ -10,27 +10,40 @@ import sys
 
 # Making it available to all the interfaces
 HOST = ''		
-# Using any non-privileged port													 
-PORT = 23000	
+# Using any non-privileged port	if the port is not specified												 
+if len(sys.argv) > 1:
+	PORT = int(sys.argv[1])
+else:	
+	PORT = 23000	
+
 backlog = 5
 receiveBuffer = 1024
 threads = []
 
 class ClientThread (Thread):
-	def __init__(self,host,port):
+	def __init__(self,clientSocket,host,port):
 		Thread.__init__(self)
 		self.host = host 
 		self.port = port
-		print "New client connecting! Address is " + host + " Port is " + str(port) 
+		self.clientSocket = clientSocket
+		print "[+] New client connecting! Address is " + host + " Port is " + str(port) 
 
 	def run (self):
 		while True:
 			data = clientSocket.recv (receiveBuffer)
-			if not data:
-				print "No data obtained from client"
+			data = self.handleMessages(data)
+			self.clientSocket.sendall (data)
+			self.clientSocket.close ()
 			break
-			clientSocket.send ("You are now connected to the server. ")
-			clientSocket.send ("Message from server " + data)
+
+	def handleMessages(self,data):
+		if data[:4] == "HELO":
+			return data + "\n" + "IP:" + str(self.host) + "\n" + "Port:" + str(self.port)
+		elif data == "KILL_SERVER": 
+			serverSocket.close ()
+			return "Killing the server"
+		else:
+			return "Disconnecting."
 
 try:
 	serverSocket = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
@@ -47,15 +60,16 @@ except socket.error, errorMessage:
 while True:
 	try:
 		# Server Socket will be reused to listen to new connections
+		print "[+] Waiting for the incoming connections..."
 		clientSocket, (remoteHost, remotePort) = serverSocket.accept ()
-		newThread = ClientThread (remoteHost,remotePort)
+		newThread = ClientThread (clientSocket,remoteHost,remotePort)
 		newThread.start()
 		threads.append (newThread)
-	except socket.error, err:
-		print "Error in connection " + err
-  		sys.exit(1)
+	except KeyboardInterrupt:
+		serverSocket.close ()
+		print "[-] Server shutting down..."
+  		sys.exit()
 
 # Wait for the threads to execute
 for t in threads:
 	t.join()
-

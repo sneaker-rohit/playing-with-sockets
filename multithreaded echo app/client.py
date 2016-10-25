@@ -7,17 +7,26 @@
 
 import socket 
 
-PORT = 23000	
-HOST = ''
+PORT = 1000	
+HOST = '127.0.0.1'
 # Maximum amount of data to be received at once.  
 receiveBuffer = 4096 
 # Creating a Socket
 clientSocket = socket.socket (socket.AF_INET,socket.SOCK_STREAM)
 # Connect to the remote server using appropriate address
 clientSocket.connect ((HOST,PORT))
-# Send a message to the server 
-clientSocket.send ("Hey there server!")
-print clientSocket.recv (receiveBuffer)
+print "[+] Connected to the server..."
+# Send a message to the server
+message = raw_input ("Enter the message/Quit: ") 
+while message != "Quit":
+	clientSocket.send (message)
+	data = clientSocket.recv (receiveBuffer)
+	print "[+] Message from server..."
+	if data:
+		print data 
+	else: 
+		print "No data received from the client"
+	message = raw_input ("Enter the message/Quit: ")
 # Close the connection
+print "[-] Terminating the connection to server..."
 clientSocket.close ()
-
